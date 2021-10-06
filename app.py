@@ -8,7 +8,7 @@ from dash import html
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 server = flask.Flask(__name__)
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP], server=server)
+app = dash.Dash(external_stylesheets=external_stylesheets, server=server)
 
 app.layout = html.Div([
     html.H2('Hello World'),
