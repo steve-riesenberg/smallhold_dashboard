@@ -10,3 +10,10 @@ The dashboard gives:
 
 The user can change the period of time they are viewing the data with the buttons in the model, this changes both the graphs and the logic counting the number of outliers. 
 
+
+
+The dashboard is hosted on Heroku to make it easy to view. If you'd like to run it locally, you can follow these steps:
+1. Clone this repo
+2. Install the requirements listed in the requirements file
+3. Run "python app.py" from the terminal
+
