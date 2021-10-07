@@ -83,8 +83,10 @@ def make_time_scatter(df, title, template = "simple_white"):
 # start App
 ##################################################################
 
-server = flask.Flask(__name__)
-app = dash.Dash(external_stylesheets=external_stylesheets, server=server)
+# server = flask.Flask(__name__)
+# app = dash.Dash(external_stylesheets=external_stylesheets, server=server)
+app = dash.Dash(external_stylesheets=external_stylesheets)
+server = app.server
 
 app.layout = html.Div(children=[
     # Page Title
