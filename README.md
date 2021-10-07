@@ -14,6 +14,6 @@ The user can change the period of time they are viewing the data with the button
 
 The dashboard is hosted on Heroku to make it easy to view. If you'd like to run it locally, you can follow these steps:
 1. Clone this repo
-2. Install the requirements listed in the requirements file
+2. Install the requirements listed in the requirements file, except gunicorn (gunicorn is required by Heroku but not required to run the app locally and is often difficult to install).
 3. Run "python app.py" from the terminal
 
