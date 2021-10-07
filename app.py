@@ -208,14 +208,3 @@ app.layout = html.Div(children=[
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
-
-app.layout = html.Div([
-
-    html.Button(id='button',
-                children=['click'],
-                n_clicks=0,
-                style=white_button_style
-    )
-
-])
