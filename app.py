@@ -7,7 +7,7 @@ import pandas as pd
 import datetime
 import plotly.express as px
 from dash.dependencies import Input, Output
-
+import dash_bootstrap_components as dbc
 
 ##################################################################
 # load data 
@@ -18,6 +18,8 @@ def load_data(data_filepath = 'data/', co2_filepath = 'co2.csv', temp_filepath =
     temp = pd.read_csv(data_filepath + temp_filepath, header=None, names=['timestamp', 'value'])
     humidity = pd.read_csv(data_filepath + humidity_filepath, header=None, names=['timestamp', 'value'])
     return co2, temp, humidity
+
+
 def process_data(df):
     df['date_time'] = df.timestamp.apply(lambda x: datetime.datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ"))
     df['day'] = df.date_time.apply(lambda x: x.day)
@@ -32,6 +34,7 @@ co2, temp, humidity = process_data(co2), process_data(temp), process_data(humidi
 ##################################################################
 # templates and colors
 ##################################################################
+FONT_AWESOME = "https://use.fontawesome.com/releases/v5.10.2/css/all.css"
 
 template = "simple_white"
 colors = {
@@ -43,10 +46,16 @@ white_button_style = {'background-color': 'white',
 blue_button_style = {'background-color': 'blue',
                     'color': 'white'}
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP, FONT_AWESOME]
 
+card_icon = {
+    "color": "white",
+    "textAlign": "center",
+    "fontSize": 30,
+    "margin": "auto",
+}
 ##################################################################
-# making graphs
+# making graphs and cards
 ##################################################################
 
 def make_time_scatter(df, title, template = "simple_white"):
@@ -61,30 +70,42 @@ def make_time_scatter(df, title, template = "simple_white"):
                   selector=dict(mode='markers'))
     return fig
 
+card1 = dbc.CardGroup(
+    [
+        dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H5("Card 1", className="card-title"),
+                    html.P("This card has some text content", className="card-text",),
+                ]
+            )
+        ),
+        dbc.Card(
+            html.Div(className="fa fa-list", style=card_icon),
+            className="bg-primary",
+            style={"maxWidth": 75},
+        ),
+    ],
+    className="mt-4 shadow",
+)
 
-co2_fig = make_time_scatter(co2, title='<b>CO2 PPM</b>')
-temp_fig = make_time_scatter(temp, title='<b>Temperature in Degrees Fahrenheit</b>')
-humidity_fig = make_time_scatter(humidity, title='<b>Humidity Percentage</b>')
-
-# temp_fig.update_layout(
-#     title_font_color="blue",
-#     title_font_family="Times New Roman",
-#     title_x=0.5, 
-#     xaxis_range = [temp.date_time.min(), temp.date_time.max()]
-# )
-
-
-# temp_fig.update_xaxes(
-#     rangeslider_visible=True,
-#     rangeselector=dict(
-#         buttons=list([dict(count=24, label="24 HRS", step="hour", stepmode="backward"),
-#             dict(count=3, label="3 Days", step="day", stepmode="todate"),
-#             dict(count=7, label="1 week", step="day", stepmode="backward"),
-#             dict(step="all")
-#         ])
-#     )
-# )
-
+card2 = dbc.CardGroup(
+    [
+        dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H5("Card 2", className="card-title"),
+                    html.P("This card has some text content", className="card-text",),
+                ]
+            )
+        ),
+        dbc.Card(
+            html.Div(className="fa fa-globe", style=card_icon),
+            className="bg-info",
+            style={"maxWidth": 75},
+        ),
+    ],className="mt-4 shadow",
+)
 ##################################################################
 # start App
 ##################################################################
@@ -104,14 +125,22 @@ app.layout = html.Div(children=[
         }
     ),
     # Page Sub Title
-    html.H3(children='A look at the farm.', 
+    html.H3(children='The farm at a glance.', 
             style={
         'textAlign': 'center',
         'color':"black"
         }
     ),
 
+    dbc.Container(dbc.Row(dbc.Col([card1, card2], md=4))),
 
+    html.H3(children='Detailed sensor data.', 
+            style={
+        'textAlign': 'center',
+        'color':"black"
+        }
+    ),
+    # Buttons
     html.Div(children = [
                 html.P('Show me data for the last: ', style={'color': 'black', 'fontSize': 14}),
                 html.Button('24 Hours', id='btn-24-Hours', n_clicks=0, style=blue_button_style),
@@ -121,31 +150,25 @@ app.layout = html.Div(children=[
                 ],
                 style={'textAlign':'center'}
             ),
+    # Graphs
     html.Div(children = [
-    # dcc.Slider(
-    #     id='date-slider',
-    #     min=temp['day'].min(),
-    #     max=temp['day'].max(),
-    #     # value=temp['date_time'].max() - datetime.timedelta(days=1),
-    #     # marks={f'2021/9/{day}': f'2021/9/{day}' for day in temp['day'].unique()},
-    #     marks={str(day): str(day) for day in temp['day'].unique()}
-    #     # step=None
-    # ),
         dcc.Graph(
-            id='co2-graph', figure=co2_fig, style={'display': 'inline-block', 'width':625}
+            id='co2-graph', 
+            style={'display': 'inline-block', 'width':625}
             ), 
         dcc.Graph(
-            id='temp-graph',  figure=temp_fig,
+            id='temp-graph', 
             style={'display': 'inline-block', 'width':625}
             ),
         dcc.Graph(
-            id='humidity-graph', figure=humidity_fig,
+            id='humidity-graph',
             style={'display': 'inline-block', 'width':625}
             )
     ], 
         style={'width': '100%', 'display': 'inline-block'})
 ])
 
+# Graph Creation and Filtering from Buttons
 @app.callback(Output('co2-graph', 'figure'),
             Output('temp-graph', 'figure'),
             Output('humidity-graph', 'figure'),
@@ -156,7 +179,9 @@ app.layout = html.Div(children=[
 def update_figure(btn1, btn2, btn3, btn4):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     data_list = {'co2':co2, 'temp':temp, 'humidity':humidity}
+    # generate max dates
     max_date_dict = {dfname:df['date_time'].max() for dfname, df in data_list.items()}
+    # subtract button time from max date and store in a dict for each data set
     if 'btn-24-Hours' in changed_id:
         min_date_dict = {dfname:max_date_dict[dfname] - datetime.timedelta(days=1) for dfname, df in data_list.items()}
     elif 'btn-3-Days' in changed_id:
@@ -168,21 +193,27 @@ def update_figure(btn1, btn2, btn3, btn4):
     else:
         min_date_dict = {dfname:max_date_dict[dfname] - datetime.timedelta(days=1) for dfname, df in data_list.items()}
     
+    # filter between min and max date
     co2_button_filter = (co2['date_time'] <= max_date_dict['co2']) & (co2['date_time'] >= min_date_dict['co2'])
     temp_button_filter = (temp['date_time'] <= max_date_dict['temp']) & (temp['date_time'] >= min_date_dict['temp'])
     humidity_button_filter = (humidity['date_time'] <= max_date_dict['humidity']) & (humidity['date_time'] >= min_date_dict['humidity'])
+
+    # filter data frames
     co2_filtered = co2[co2_button_filter]
     temp_filtered = temp[temp_button_filter]
     humidity_filtered = humidity[humidity_button_filter]
+
+    # make figures
     co2_fig = make_time_scatter(co2_filtered, title='<b>CO2 PPM</b>')
     temp_fig = make_time_scatter(temp_filtered, title='<b>Temperature in Degrees Fahrenheit</b>')
     humidity_fig = make_time_scatter(humidity_filtered, title='<b>Humidity Percentage</b>')
-    # co2_fig.update_layout(transition_duration=500)
-    # temp_fig.update_layout(transition_duration=500)
-    # humidity_fig.update_layout(transition_duration=500)
+    co2_fig.update_layout(transition_duration=500)
+    temp_fig.update_layout(transition_duration=500)
+    humidity_fig.update_layout(transition_duration=500)
 
     return co2_fig, temp_fig, humidity_fig
 
+# Button Styling
 @app.callback(Output('btn-24-Hours', 'style'),
     Output('btn-3-Days', 'style'),
     Output('btn-1-Week', 'style'),
