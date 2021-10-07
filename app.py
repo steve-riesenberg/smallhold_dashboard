@@ -8,6 +8,7 @@ import datetime
 import plotly.express as px
 from dash.dependencies import Input, Output
 
+
 ##################################################################
 # load data 
 ##################################################################
@@ -41,7 +42,7 @@ white_button_style = {'background-color': 'white',
 blue_button_style = {'background-color': 'blue',
                     'color': 'white'}
 
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 ##################################################################
 # making graphs
@@ -86,6 +87,7 @@ server = flask.Flask(__name__)
 app = dash.Dash(external_stylesheets=external_stylesheets, server=server)
 
 app.layout = html.Div(children=[
+    # Page Title
     html.H1(
         children='Smallhold Farm',
         style={
@@ -93,13 +95,15 @@ app.layout = html.Div(children=[
             'color':"black"
         }
     ),
-
+    # Page Sub Title
     html.H3(children='A look at the farm.', 
             style={
         'textAlign': 'center',
         'color':"black"
         }
     ),
+
+
     html.Div(children = [
                 html.P('Show me data for the last: ', style={'color': 'black', 'fontSize': 14}),
                 html.Button('24 Hours', id='btn-24-Hours', n_clicks=0, style=blue_button_style),
@@ -165,9 +169,9 @@ def update_figure(btn1, btn2, btn3, btn4):
     co2_fig = make_time_scatter(co2_filtered, title='<b>CO2 PPM</b>')
     temp_fig = make_time_scatter(temp_filtered, title='<b>Temperature in Degrees Fahrenheit</b>')
     humidity_fig = make_time_scatter(humidity_filtered, title='<b>Humidity Percentage</b>')
-    co2_fig.update_layout(transition_duration=500)
-    temp_fig.update_layout(transition_duration=500)
-    humidity_fig.update_layout(transition_duration=500)
+    # co2_fig.update_layout(transition_duration=500)
+    # temp_fig.update_layout(transition_duration=500)
+    # humidity_fig.update_layout(transition_duration=500)
 
     return co2_fig, temp_fig, humidity_fig
 
