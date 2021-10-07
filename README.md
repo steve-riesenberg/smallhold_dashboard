@@ -9,6 +9,7 @@ The dashboard gives:
   3. A whole view of all the sensor data over time, with outliers highlighted in orange. 
 
 The user can change the period of time they are viewing the data with the buttons in the model, this changes both the graphs and the logic counting the number of outliers. 
+The data is also smoothed into 5 minute intervals to make the visualizations a little nicer.
 
 
 
